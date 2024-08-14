@@ -1,21 +1,42 @@
-create table card_transactions(
-    ct_id varchar,
-    ct_card_number text,
-    ct_description text,
-    ct_currency text,
-    ct_amount numeric(38,2),
-    ct_date timestamp
+
+create table tb_products (
+    product_id uuid not null primary key,
+    product_description varchar(255),
+    product_price numeric(38,2)
 );
 
-insert into card_transactions(ct_id, ct_card_number, ct_description, ct_currency, ct_amount, ct_date)
-values ('c4eb989a-54c0-40a2-b206-6622683c096e', '1234', 'Google', 'USD', 20, '2024-07-13T10:00:00');
-insert into card_transactions(ct_id, ct_card_number, ct_description, ct_currency, ct_amount, ct_date)
-values ('77dd3d28-95f5-4e19-9750-333fccaecb1c', '1234', 'Amazon', 'BLR', 290, '2024-07-13T10:01:00');
-insert into card_transactions(ct_id, ct_card_number, ct_description, ct_currency, ct_amount, ct_date)
-values ('7712a6bc-f2ee-42af-8791-e15d0fc28d6c', '1234', 'Shoppe', 'BLR', 467.50, '2024-07-13T10:20:00');
-insert into card_transactions(ct_id, ct_card_number, ct_description, ct_currency, ct_amount, ct_date)
-values ('588bd1b3-5113-4ab0-ad92-83e494001e11', '1234', 'Aliexpress', 'BLR', 250, '2024-08-13T10:00:00');
-insert into card_transactions(ct_id, ct_card_number, ct_description, ct_currency, ct_amount, ct_date)
-values ('84ff55f2-0283-4dd9-b55e-62596b593e07', '1234', 'Mercado Livre', 'BLR', 1000, '2024-08-13T08:00:00');
-insert into card_transactions(card_transaction_id, card_transaction_card_number, card_transaction_description, card_transaction_currency, card_transaction_amount, card_transaction_date)
-values ('5459ff55-f7a3-4f34-bd95-e7b578cec2bc', '1234', 'Ebay', 'USD', 600, '2024-08-13T09:00:00');
+insert into tb_products(product_id, product_description, product_price)
+values ('c4eb989a-54c0-40a2-b206-6622683c096e', 'Produto do tipo 1', 200);
+insert into tb_products(product_id, product_description, product_price)
+values ('61a77341-f6c4-46a4-8802-40c59e793f0b', 'Produto do tipo 2', 100);
+insert into tb_products(product_id, product_description, product_price)
+values ('5f5160c9-2e16-42fb-a376-c545000a0603', 'Produto do tipo 3', 300);
+insert into tb_products(product_id, product_description, product_price)
+values ('dfa5b540-a8e0-41c9-89a4-3fc934766df2', 'Produto do tipo 4', 400);
+
+create table tb_coupons (
+    coupon_id uuid not null primary key,
+    coupon_code varchar(255),
+    coupon_percentage numeric(38,2),
+    coupon_expire_date timestamp
+);
+
+insert into tb_coupons(coupon_id, coupon_code, coupon_percentage, coupon_expire_date)
+values ('d74fa016-8bed-4f32-a4f1-b41ec3d0a95d', '1234', 0.1, '2024-08-01T10:00:00');
+insert into tb_coupons(coupon_id, coupon_code, coupon_percentage, coupon_expire_date)
+values ('dfc1e4a5-22df-4894-9a23-6d4bcabe1e10', '4321', 0.05, '2024-08-10T10:00:00');
+
+create table tb_orders(
+    order_id uuid not null primary key,
+    order_coupon_code varchar(255),
+    order_email varchar(255),
+    order_total numeric(38,2)
+);
+
+create table tb_itens(
+    item_id uuid not null primary key,
+    item_product_id uuid,
+    item_order_id uuid,
+    item_price numeric(38,2),
+    item_quantity integer
+);
