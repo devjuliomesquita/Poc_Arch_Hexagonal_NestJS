@@ -6,7 +6,7 @@ import { Injectable } from '@nestjs/common';
 import OutputGetOrderDTO from '../dtos/output_get.dto';
 
 @Injectable()
-export default class GetOrderImpl implements GetOrder {
+export class GetOrderImpl implements GetOrder {
   constructor(private readonly orderRepository: OrderRepository) {}
   async execute(input: InputGetOrderDTO): Promise<OutputGetOrderDTO> {
     const order: Order = await this.orderRepository.getOrder(input.orderId);

@@ -4,14 +4,15 @@ import { Injectable } from '@nestjs/common';
 import ConnectionAdapter from '../../adapters/interfaces/connection.adapter';
 
 @Injectable()
-export default class ProductRepositoryImpl implements ProductRepository {
+export class ProductRepositoryImpl implements ProductRepository {
   constructor(private readonly connection: ConnectionAdapter) {}
   async getProduct(productId: string): Promise<Product> {
+    await this.connection.connect();
     const [productData] = await this.connection.query(
       'select * from tb_products p where(p.product_id = $1)',
       [productId],
     );
-    await this.connection.close();
+    await this.connection.release();
     return new Product(
       productData.product_id,
       productData.description,

@@ -7,28 +7,43 @@ import Item from 'src/order_context/domain/item';
 import Coupon from 'src/order_context/domain/coupon';
 
 @Injectable()
-export default class OrderRepositoryImpl implements OrderRepository {
+export class OrderRepositoryImpl implements OrderRepository {
   constructor(private readonly connection: ConnectionAdapter) {}
   async saveOrder(order: Order): Promise<void> {
-    await this.connection.query(
-      'insert into tb_orders (order_id, order_coupon_code, order_email, order_total) values ($1,$2,$3,$4)',
-      [order.orderId, order.coupon?.code, order.email.value, order.getTotal()],
-    );
-    for (const item of order.itens) {
+    await this.connection.connect();
+    await this.connection.startTransaction();
+    try {
       await this.connection.query(
-        'insert into tb_itens (item_id, item_product_id, item_order_id, item_price, item_quantity) values ($1,$2,$3,$4,$5)',
+        'insert into tb_orders (order_id, order_coupon_code, order_email, order_total) values ($1,$2,$3,$4)',
         [
-          crypto.randomUUID(),
-          item.productId,
-          item.orderId,
-          item.price,
-          item.quantity,
+          order.orderId,
+          order.coupon?.code,
+          order.email.value,
+          order.getTotal(),
         ],
       );
+      for (const item of order.itens) {
+        await this.connection.query(
+          'insert into tb_itens (item_id, item_product_id, item_order_id, item_price, item_quantity) values ($1,$2,$3,$4,$5)',
+          [
+            crypto.randomUUID(),
+            item.productId,
+            item.orderId,
+            item.price,
+            item.quantity,
+          ],
+        );
+      }
+      await this.connection.commitTransaction();
+    } catch (error) {
+      console.log(error);
+      await this.connection.rollbackTransaction();
+    } finally {
+      await this.connection.release();
     }
-    await this.connection.close();
   }
   async getOrder(orderId: string): Promise<Order> {
+    await this.connection.connect();
     const [orderData] = await this.connection.query(
       'select * from tb_orders o where(o.order_id = $1)',
       [orderId],
@@ -43,8 +58,8 @@ export default class OrderRepositoryImpl implements OrderRepository {
       'select * from tb_coupons c where(c.coupon_code = $1)',
       [orderData.order_coupon_code],
     );
+    await this.connection.release();
 
-    await this.connection.close();
     const order: Order = new Order(
       orderData.order_id,
       new Email(orderData.order_email),

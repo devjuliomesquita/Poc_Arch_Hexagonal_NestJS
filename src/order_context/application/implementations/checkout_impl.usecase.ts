@@ -9,7 +9,7 @@ import Product from 'src/order_context/domain/product';
 import Coupon from 'src/order_context/domain/coupon';
 
 @Injectable()
-export default class CheckoutImpl implements Checkout {
+export class CheckoutImpl implements Checkout {
   constructor(
     private readonly orderRespository: OrderRepository,
     private readonly couponRepository: CouponRepository,

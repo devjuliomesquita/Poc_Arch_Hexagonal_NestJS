@@ -1,18 +1,30 @@
 import { Injectable } from '@nestjs/common';
 import ConnectionAdapter from '../interfaces/connection.adapter';
-import pgPromise from 'pg-promise';
+import { QueryRunner } from 'typeorm';
+import { dataSource } from '../../configuration/data_source';
 
 @Injectable()
-export default class ConnectionAdapterImpl implements ConnectionAdapter {
-  private connection: any;
+export class ConnectionAdapterImpl implements ConnectionAdapter {
+  private queryRunner: QueryRunner;
   constructor() {
-    const pgp = pgPromise();
-    this.connection = pgp('postgres://test:123@localhost:5432/test');
+    this.queryRunner = dataSource.createQueryRunner();
   }
-  query(statement: string, params: any): Promise<any> {
-    return this.connection.query(statement, params);
+  async connect(): Promise<void> {
+    this.queryRunner.connect();
   }
-  close(): Promise<any> {
-    return this.connection.$pool.end();
+  async startTransaction(): Promise<void> {
+    this.queryRunner.startTransaction();
+  }
+  async commitTransaction(): Promise<void> {
+    this.queryRunner.commitTransaction();
+  }
+  async rollbackTransaction(): Promise<void> {
+    this.queryRunner.rollbackTransaction();
+  }
+  async release(): Promise<void> {
+    this.queryRunner.release();
+  }
+  async query(statement: string, params: any): Promise<any> {
+    return this.queryRunner.query(statement, params);
   }
 }
