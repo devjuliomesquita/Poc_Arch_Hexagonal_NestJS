@@ -17,6 +17,10 @@ import {
   CheckoutImpl,
   GetOrderImpl,
 } from './order_context/application/implementations';
+import ConnectionAdapter from './order_context/infrastruture/adapters/interfaces/connection.adapter';
+import OrderRepository from './order_context/infrastruture/repositories/interfaces/order.repository';
+import CouponRepository from './order_context/infrastruture/repositories/interfaces/coupon.repository';
+import ProductRepository from './order_context/infrastruture/repositories/interfaces/product.repository';
 
 @Module({
   imports: [],
@@ -25,15 +29,24 @@ import {
     // Repositories
     {
       provide: COUPON_REPOSITORY,
-      useClass: CouponRepositoryImpl,
+      useFactory: (connection: ConnectionAdapter) => {
+        return new CouponRepositoryImpl(connection);
+      },
+      inject: [CONNECTION_ADAPTER],
     },
     {
       provide: ORDER_REPOSITORY,
-      useClass: OrderRepositoryImpl,
+      useFactory: (connection: ConnectionAdapter) => {
+        return new OrderRepositoryImpl(connection);
+      },
+      inject: [CONNECTION_ADAPTER],
     },
     {
       provide: PRODUCT_REPOSITORY,
-      useClass: ProductRepositoryImpl,
+      useFactory: (connection: ConnectionAdapter) => {
+        return new ProductRepositoryImpl(connection);
+      },
+      inject: [CONNECTION_ADAPTER],
     },
     // Adapters
     {
@@ -43,11 +56,25 @@ import {
     // Usecases
     {
       provide: CHECKOUT,
-      useClass: CheckoutImpl,
+      useFactory: (
+        orderRepository: OrderRepository,
+        couponRepository: CouponRepository,
+        productRepository: ProductRepository,
+      ) => {
+        return new CheckoutImpl(
+          orderRepository,
+          couponRepository,
+          productRepository,
+        );
+      },
+      inject: [ORDER_REPOSITORY, COUPON_REPOSITORY, PRODUCT_REPOSITORY],
     },
     {
       provide: GET_ORDER,
-      useClass: GetOrderImpl,
+      useFactory: (orderRepository: OrderRepository) => {
+        return new GetOrderImpl(orderRepository);
+      },
+      inject: [ORDER_REPOSITORY],
     },
   ],
 })

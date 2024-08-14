@@ -1,4 +1,4 @@
-import { RecordBase } from '../common';
+import RecordBase from '../shared/record_base';
 import Coupon from './coupon';
 import Email from './email';
 import Item from './item';

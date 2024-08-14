@@ -1,4 +1,4 @@
-export abstract class RecordBase {
+export default abstract class RecordBase {
   constructor(properties: { [key: string]: any }) {
     Object.assign(this, properties);
   }

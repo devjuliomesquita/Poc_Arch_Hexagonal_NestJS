@@ -1,4 +1,4 @@
-import { RecordBase } from '../common/index';
+import RecordBase from '../shared/record_base';
 
 export default class Product extends RecordBase {
   constructor(
