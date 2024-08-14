@@ -10,9 +10,11 @@ export class GetOrderImpl implements GetOrder {
   constructor(private readonly orderRepository: OrderRepository) {}
   async execute(input: InputGetOrderDTO): Promise<OutputGetOrderDTO> {
     const order: Order = await this.orderRepository.getOrder(input.orderId);
+    console.log(order);
+    console.log(order.email.email);
     return {
       orderID: order.orderId,
-      email: order.email.value,
+      email: order.email.email,
       total: order.getTotal(),
     };
   }

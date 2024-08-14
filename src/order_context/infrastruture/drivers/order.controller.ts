@@ -9,7 +9,7 @@ import GetOrder, {
   GET_ORDER,
 } from 'src/order_context/application/interfaces/get_order.usecase';
 
-@Controller()
+@Controller('order')
 export default class OrderController {
   @Inject(CHECKOUT)
   private readonly checkout: Checkout;
@@ -22,10 +22,9 @@ export default class OrderController {
     return orderId;
   }
 
-  @Get(':order-id')
-  async getOrderById(
-    @Param('order-id') orderId: string,
-  ): Promise<OutputGetOrderDTO> {
+  @Get(':id')
+  async getOrderById(@Param('id') orderId: string): Promise<OutputGetOrderDTO> {
+    console.log('CHEGOU AQUI');
     return await this.getOrder.execute(new InputGetOrderDTO(orderId));
   }
 }
