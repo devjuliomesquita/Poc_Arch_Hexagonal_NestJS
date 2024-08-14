@@ -1,0 +1,12 @@
+services:
+  db_postgres:
+    image: postgres:15.6
+    container_name: poc_test
+    restart: always
+    tty: true
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=123
+      - POSTGRES_DB=test
